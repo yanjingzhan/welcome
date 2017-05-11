@@ -1,0 +1,8 @@
+[res]
+空瓶装水解谜.png
+空瓶装水解谜.txt
+[lib]
+ts.so
+[file]
+main.lua
+fuckall.lua
