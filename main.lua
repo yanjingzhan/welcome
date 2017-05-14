@@ -15,6 +15,7 @@ function string.split(str, delimiter)
 	return result
 end
 
+--返回 true/false 账号 密码 游戏个数 关键字 bunldeNames, appIDs
 function getAccountInfo(url)
 
 	local sz = require("sz")
@@ -27,7 +28,7 @@ function getAccountInfo(url)
 		toast(res);
 --		toast(tableTemp[13]);
 		if #tableTemp > 12 then
-			return true,tableTemp[1],tableTemp[2],tableTemp[3],tableTemp[12];
+			return true,tableTemp[1],tableTemp[2],tableTemp[3],tableTemp[12],tableTemp[22],tableTemp[23];
 		else 
 			return false;
 		end
@@ -35,6 +36,57 @@ function getAccountInfo(url)
 		return false;
 	end
 end
+
+function findAndClickImage(imageName,x1,y1,x2,y2)
+	toast('正在寻找...' .. imageName);        
+	x, y = findImage(imageName, x1, y1, x2, y2);--在（0,0）到（120,480）寻找刚刚截图的图片
+	if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+		touchDown(x,y);
+		mSleep(30);
+		touchUp(x,y);
+		return true;
+	else                               --如果找不到符合条件的图片
+		toast('没有找到' .. imageName);       
+		return false;
+	end
+end
+
+function findImageClickArea(imageName,x11,y11,x12,y12,x21,y21)
+	toast('正在寻找...' .. imageName);        
+	x, y = findImage(imageName, x11, y11, x12, y12);--在（0,0）到（120,480）寻找刚刚截图的图片
+	if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+		touchDown(x21,y21);
+		mSleep(30);
+		touchUp(x21,y21);
+		return true;
+	else    
+--		dialog('没有找到' .. imageName);
+		toast('没有找到' .. imageName);       
+		return false;
+	end
+end
+
+function findImageClickAreaList(imageAndAreaList)
+	local result =false;
+	for i=1,#imageAndAreaList,1 do
+		--dialog("图片个数" .. #imageAndAreaList .. ";图片名字：" .. imageAndAreaList[i].imageName);
+
+		local t = findImageClickArea(imageAndAreaList[i].imageName,imageAndAreaList[i].x11,imageAndAreaList[i].y11,imageAndAreaList[i].x12,imageAndAreaList[i].y12,imageAndAreaList[i].x21,imageAndAreaList[i].y21);
+		if t then
+			result = t;
+		end
+	end
+	return result;
+
+end
+
+----找图
+--x, y = findImage("空瓶装水解谜.png", 180, 170, 370, 230);--在（0,0）到（120,480）寻找刚刚截图的图片
+--if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+--	toast(x..y);                   --显示坐标
+--else                               --如果找不到符合条件的图片
+--	toast('没有找到图片!');        
+--end
 
 
 function  killVPN()
@@ -50,8 +102,8 @@ function  killVPN()
 	return false;
 end
 
-function  connectVPN()
-	for i=0,10,1 do
+function  connectVPN(retryCount)
+	for i=0,retryCount,1 do
 		setVPNEnable(true);
 		mSleep(3000);
 
@@ -65,6 +117,105 @@ function  connectVPN()
 	return false;
 end
 
+function loginAppStore(account,password,retryCount,checkCount)
+	closeApp("com.apple.AppStore"); 
+	mSleep(2000);
+	r = runApp("com.apple.AppStore");
+	if r == 0 then
+		toast("启动 AppStore 成功",1);
+
+		local hasLoginned = true;
+		for j=0,retryCount,1 do			
+			toast("第" .. j .. "次执行登陆",1);
+
+			appstoreLogout();
+			mSleep(1000);
+			appstoreLogin(account,password);
+
+			for i=0,checkCount,1 do
+				mSleep(6000);
+
+				local imageDataList = {};
+				imageDataList[1] = {imageName = "未能登录.png",x11 = 200,y11 = 470,x12 = 410,y12 = 530,x21 = 289,y21 = 648};
+				imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
+--				local status = findImageClickArea("未能登录.png",200,470,410,530,289,648);
+
+				local status = findImageClickAreaList(imageDataList);
+				if status then 
+					toast("未能登录",1);	
+					hasLoginned = false;
+					break
+				else
+					toast(i .. "次检查",1);					
+				end
+			end
+
+			if hasLoginned then
+				break
+			end
+		end
+
+		if not hasLoginned then
+			toast('执行登陆失败！！！',10);
+			return false;
+		end
+
+		return true;
+	else
+		toast("启动 AppStore 失败",1);
+		return false;
+	end
+end
+
+function SerachFuck(keyword,appid)
+	if isFrontApp("com.apple.AppStore") ~= 1 then
+
+		runApp("com.apple.AppStore"); 
+		mSleep(1000);
+	end
+
+--	touchDown(432,1068);
+--	mSleep(30);
+--	touchUp(432,1068);
+
+	for i = 0,5,1 do
+		mSleep(1000);
+		if findAndClickImage("search.png",410,1040,477,1111) then
+			break;
+		end
+	end
+
+	mSleep(1000);
+
+	touchDown(130,86);
+	mSleep(30);
+	touchUp(130,86);
+
+	mSleep(1000);             
+
+	AppstoreTopApp(appid);
+	inputText(keyword .. "\n"); 
+
+	for i = 0,5,1 do
+		mSleep(1000);
+		local x, y = findImage("gamelogo1.png", 188, 173, 521, 212);
+		if x ~= -1 and y ~= -1 then   
+			toast("找到了" .. keyword,1)
+			break;
+		else                               
+			toast("第".. i .. '次没有找到' .. keyword);       
+		end
+	end
+
+	for i = 0,5,1 do
+		mSleep(1000);
+		local x, y = findImage("hasdownloaded.png", 542, 264, 620, 330);
+		if x ~= -1 and y ~= -1 then   
+			toast("已经下载过了！！！" .. keyword,1)
+			break;
+		end
+	end
+end
 
 
 --如果普通版tsp可以加上该段代码
@@ -86,53 +237,51 @@ end
 --account = "CritesYanki4048@hotmail.com";
 --password = "LGbRKr22";
 
-account = "x36t8@ui6.top";
-password = "Dd112211";
+account = "c1892767@icloud.com";
+password = "Asd112211";
+
 
 
 --AppStore
---[====[
 
 --closeApp("com.apple.AppStore"); 
 --mSleep(3000);
 
-r = runApp("com.apple.AppStore");
-if r == 0 then
-	toast("启动 AppStore 成功",1);
+--r = runApp("com.apple.AppStore");
+--if r == 0 then
+--	toast("启动 AppStore 成功",1);
 
-	hasLoginned = false;
-	for j=0,2,1 do			
-		toast("第" .. j .. "次执行登陆",1);
+--	hasLoginned = false;
+--	for j=0,2,1 do			
+--		toast("第" .. j .. "次执行登陆",1);
 
-		appstoreLogout();
-		mSleep(2000);
-		appstoreLogin(account,password);
+--		appstoreLogout();
+--mSleep(2000);
+--appstoreLogin(account,password);
 
-		for i=0,10,1 do
-			mSleep(2000);
-			local status = appstoreStatus() 
-			if status == 1 then 
-				toast("登录成功",1);
-				hasLoginned = true;
-				break
-			else
-				toast(i .. "次登录失败，" .. status,1);
-			end
-		end
+--for i=0,10,1 do
+--	mSleep(2000);
+--	local status = appstoreStatus(0) 
+--	if status == 1 then 
+--		toast("登录成功",1);
+--		hasLoginned = true;
+--		break
+--	else
+--		toast(i .. "次登录失败，" .. status,1);
+--	end
+--end
 
-		if hasLoginned then
-			break
-		end
-	end
+--if hasLoginned then
+--	break
+--end
+--end
 
-	if not hasLoginned then
-		toast('执行登陆失败！！！',1);
-	end
-else
-	toast("启动 AppStore 失败",1);
-end
-
-]====] 
+--if not hasLoginned then
+--	toast('执行登陆失败！！！',1);
+--end
+--else
+--toast("启动 AppStore 失败",1);
+--end
 
 --找字
 --[====[
@@ -179,7 +328,55 @@ dialog("识别到的内容:"..ret)
 --recognize = ocrText(180, 170 , 490, 245, 1);  --OCR 英文识别
 --mSleep(1000); 
 --dialog("识别出的字符："..recognize, 0);
-res = killVPN();
-toast(tostring(res) .. ":killVPN",1);
---res = connectVPN();
+--res = killVPN();
+--toast(tostring(res) .. ":killVPN",1);
+--res = connectVPN(3);
 --toast(tostring(res) .. ":connectVPN",1);
+
+--if not res then 
+--	findAndClickImage("取消.png",60,420,310,490);
+--	findAndClickImage("好.png",250,650,400,700);
+--end	
+
+
+
+--if not res then 
+--	findAndClickImage("好.png",250,650,400,700);
+--end	
+
+
+--local t = loginAppStore(account,password,2,2);
+--toast(tostring(t) .. ":loginAppStore",10);
+
+--if t then
+--	SerachFuck("记忆","1216807923");
+--end
+
+--local imageDataList = {};
+--imageDataList[1] = {imageName = "未能登录.png",x11 = 200,y11 = 470,x12 = 410,y12 = 530,x21 = 289,y21 = 648};
+--imageDataList[1] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
+
+
+--r = runApp("com.apple.AppStore");
+
+
+--local hasLoginned = true;
+--appstoreLogout();
+--mSleep(1000);
+--appstoreLogin(account,password);
+
+--local imageDataList = {};
+--imageDataList[1] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
+--findImageClickAreaList(imageDataList);
+
+--x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
+--if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+--	inputText(password);
+--	inputText("\n")
+--else                               --如果找不到符合条件的图片
+--	toast('没有找到' .. imageName);       
+--end
+
+closeApp("com.apple.AppStore"); 
+mSleep(1000);
+SerachFuck("记忆","1216807923");
