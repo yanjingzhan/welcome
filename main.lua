@@ -1,6 +1,13 @@
 --com.apple.Preferences
 --com.apple.AppStore
 
+
+--globlaAccount = "CritesYanki4048@hotmail.com";
+--globlaPassword = "LGbRKr22";
+
+globlaAccount = "a8673601@icloud.com";
+globlaPassword = "Asd112211";
+
 --字符串分割函数
 --传入字符串和分隔符，返回分割后的table
 function string.split(str, delimiter)
@@ -39,7 +46,9 @@ end
 
 function findAndClickImage(imageName,x1,y1,x2,y2)
 	toast('正在寻找...' .. imageName);        
-	x, y = findImage(imageName, x1, y1, x2, y2);--在（0,0）到（120,480）寻找刚刚截图的图片
+--	x, y = findImageInRegionFuzzy(imageName,90, x1, y1, x2, y2,0);--在（0,0）到（120,480）寻找刚刚截图的图片
+
+	x,y = findImage(imageName,x1, y1, x2, y2);
 	if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
 		touchDown(x,y);
 		mSleep(30);
@@ -117,6 +126,21 @@ function  connectVPN(retryCount)
 	return false;
 end
 
+function reLogin(account,password,retryCount)
+	for i=0,retryCount,1 do
+		x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
+		if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+			inputText(password);
+			inputText("\n");
+
+			return;
+		else                               --如果找不到符合条件的图片
+			toast('没有找到' .. "登录 iTunes Store.png");       
+		end	
+	end
+
+end
+
 function loginAppStore(account,password,retryCount,checkCount)
 	closeApp("com.apple.AppStore"); 
 	mSleep(2000);
@@ -148,6 +172,24 @@ function loginAppStore(account,password,retryCount,checkCount)
 				else
 					toast(i .. "次检查",1);					
 				end
+
+				local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
+				if x ~= -1 and y ~= -1 then        
+					inputText(password);
+					inputText("\n");
+				else                               
+					toast('没有找到' .. "登录 iTunes Store.png");       
+				end	
+
+				if findImageClickArea("此AppleID只能在.png",80,430,560,480,300,700) then
+					hasLoginned = true;
+					break;
+				end;
+
+				if findImageClickArea("thisappliidisonly.png",80,410,560,460,300,700) then
+					hasLoginned = true;
+					break;
+				end;
 			end
 
 			if hasLoginned then
@@ -191,14 +233,21 @@ function SerachFuck(keyword,appid)
 	mSleep(30);
 	touchUp(130,86);
 
+	for i = 0,5,1 do
+		mSleep(1500);
+		if findAndClickImage("searchtop.png",15,60,600,110) then
+			break;
+		end
+	end
+
 	mSleep(1000);             
 
 	AppstoreTopApp(appid);
 	inputText(keyword .. "\n"); 
 
 	for i = 0,5,1 do
-		mSleep(1000);
-		local x, y = findImage("gamelogo1.png", 188, 173, 521, 212);
+		mSleep(2000);
+		local x, y = findImage("gamelogo1.png", 188, 173, 521, 265);
 		if x ~= -1 and y ~= -1 then   
 			toast("找到了" .. keyword,1)
 			break;
@@ -209,11 +258,84 @@ function SerachFuck(keyword,appid)
 
 	for i = 0,5,1 do
 		mSleep(1000);
-		local x, y = findImage("hasdownloaded.png", 542, 264, 620, 330);
+
+--		if findAndClickImage("加号.png",540, 190, 620, 270) then			
+--			toast("点击啦加号" .. keyword,1);
+--			mSleep(1000);
+
+--			touchDown(540,225);
+--			mSleep(30);
+--			touchUp(540,225);
+
+--			break;
+--		end
+
+		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 270,0);
+		if x ~= -1 and y ~= -1 then   			
+
+			touchDown(x,y);
+			mSleep(30);
+			touchUp(x,y);
+
+			toast("点击啦加号" .. keyword,1);
+			mSleep(1000);
+
+			touchDown(540,225);
+			mSleep(30);
+			touchUp(540,225);
+
+			break;     
+		end	
+
+--		local x, y = findImage("hasdownloaded.png", 540, 190, 620, 310);
+--		if x ~= -1 and y ~= -1 then   
+--			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
+--			return false;
+--		end
+
+		local x, y = findImageInRegionFuzzy("hasdownloaded.png",95,540, 190, 620, 310,0);
 		if x ~= -1 and y ~= -1 then   
-			toast("已经下载过了！！！" .. keyword,1)
-			break;
+
+			dialog("已经下载过了！！！");    
+			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
+			return false;
 		end
+	end
+
+	for i =0,200,1 do
+		mSleep(2000);
+
+		local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
+		if x ~= -1 and y ~= -1 then        
+			inputText(globlaPassword);
+			inputText("\n");
+		else                               
+			toast('没有找到' .. "登录 iTunes Store.png");       
+		end	
+
+		local imageDataList = {};
+		imageDataList[1] = {imageName = "在此设备上的.png",x11 = 70,y11 = 430,x12 = 580,y12 = 490,x21 = 490,y21 = 690};
+		imageDataList[2] = {imageName = "是否为免费项目.png",x11 = 80,y11 = 455,x12 = 565,y12 = 510,x21 = 200,y21 = 660};
+
+		findImageClickAreaList(imageDataList);
+
+--		if findAndClickImage("蓝块.png",540,190,625,275) then
+--			toast("下载成功并点击取消！！！",5);
+--		end
+
+		local x, y = findImageInRegionFuzzy("蓝块.png",100, 540,190,625,275,0);
+		if x ~= -1 and y ~= -1 then   
+
+			mSleep(3000);
+			touchDown(x,y);
+			mSleep(30);
+			touchUp(x,y);
+
+--			dialog('找到' .. "蓝块.png");       
+		else                               
+			toast('没有找到' .. "蓝块.png");       
+		end	
+
 	end
 end
 
@@ -234,11 +356,7 @@ if bkvs ~= "1.0.9.3" then --自己上传的文件版本号
 	delFile(userPath().."/plugin/aso.tsl") --删除老版本
 end
 
---account = "CritesYanki4048@hotmail.com";
---password = "LGbRKr22";
 
-account = "c1892767@icloud.com";
-password = "Asd112211";
 
 
 
@@ -362,8 +480,14 @@ dialog("识别到的内容:"..ret)
 
 --local hasLoginned = true;
 --appstoreLogout();
---mSleep(1000);
---appstoreLogin(account,password);
+--mSleep(5000);
+--appstoreLogin(globlaAccount,globlaPassword,2,2);
+
+--loginAppStore(globlaAccount,globlaPassword,2,2);
+--local loginResult = loginAppStore(globlaAccount,globlaPassword,2,2);
+--if not loginResult then
+--	return;
+--end
 
 --local imageDataList = {};
 --imageDataList[1] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
@@ -374,9 +498,18 @@ dialog("识别到的内容:"..ret)
 --	inputText(password);
 --	inputText("\n")
 --else                               --如果找不到符合条件的图片
---	toast('没有找到' .. imageName);       
+--	toast('没有找到' .. "登录 iTunes Store.png");       
 --end
 
+mSleep(1000);
 closeApp("com.apple.AppStore"); 
 mSleep(1000);
-SerachFuck("记忆","1216807923");
+
+killVPN();
+connectVPN(3);
+
+loginAppStore(globlaAccount,globlaPassword,2,2);
+
+--1216807923
+--SerachFuck("Garden","1213947069");
+SerachFuck("puzzle","1216807923");
