@@ -2,11 +2,15 @@
 --com.apple.AppStore
 
 
---globlaAccount = "CritesYanki4048@hotmail.com";
---globlaPassword = "LGbRKr22";
+globlaAccount = "breonalanhywxuer@hotmail.com";
+globlaPassword = "UQpqLi22";
+globlaGameAccount = 1;
+globlaKeyWords = "";
+globlaBunldeName="";
+globlaAppID="";
 
-globlaAccount = "a8673601@icloud.com";
-globlaPassword = "Asd112211";
+--globlaAccount = "a8673601@icloud.com";
+--globlaPassword = "Asd112211";
 
 --字符串分割函数
 --传入字符串和分隔符，返回分割后的table
@@ -153,7 +157,7 @@ function loginAppStore(account,password,retryCount,checkCount)
 			toast("第" .. j .. "次执行登陆",1);
 
 			appstoreLogout();
-			mSleep(1000);
+			mSleep(3000);
 			appstoreLogin(account,password);
 
 			for i=0,checkCount,1 do
@@ -222,9 +226,19 @@ function SerachFuck(keyword,appid)
 
 	for i = 0,5,1 do
 		mSleep(1000);
-		if findAndClickImage("search.png",410,1040,477,1111) then
+--		if findAndClickImage("search.png",410,1040,477,1111) then
+--			break;
+--		end
+
+		local x, y = findImageInRegionFuzzy("search.png",90,400,1040,477,1120,0);
+		if x ~= -1 and y ~= -1 then   
+			touchDown(x ,y);
+			mSleep(30);
+			touchUp(x,y);
+
 			break;
 		end
+
 	end
 
 	mSleep(1000);
@@ -235,7 +249,16 @@ function SerachFuck(keyword,appid)
 
 	for i = 0,5,1 do
 		mSleep(1500);
-		if findAndClickImage("searchtop.png",15,60,600,110) then
+--		if findAndClickImage("searchtop.png",15,60,600,110) then
+--			break;
+--		end
+
+		local x, y = findImageInRegionFuzzy("searchtop.png",95,15,60,600,110,0);
+		if x ~= -1 and y ~= -1 then   
+			touchDown(x + 100,y);
+			mSleep(30);
+			touchUp(x + 100,y);
+
 			break;
 		end
 	end
@@ -245,7 +268,7 @@ function SerachFuck(keyword,appid)
 	AppstoreTopApp(appid);
 	inputText(keyword .. "\n"); 
 
-	for i = 0,5,1 do
+	for i = 0,500,1 do
 		mSleep(2000);
 		local x, y = findImage("gamelogo1.png", 188, 173, 521, 265);
 		if x ~= -1 and y ~= -1 then   
@@ -256,21 +279,56 @@ function SerachFuck(keyword,appid)
 		end
 	end
 
-	for i = 0,5,1 do
-		mSleep(1000);
+--	for i = 0,5,1 do
+--		mSleep(1000);
 
---		if findAndClickImage("加号.png",540, 190, 620, 270) then			
+--		--		if findAndClickImage("加号.png",540, 190, 620, 270) then			
+--		--			toast("点击啦加号" .. keyword,1);
+--		--			mSleep(1000);
+
+--		--			touchDown(540,225);
+--		--			mSleep(30);
+--		--			touchUp(540,225);
+
+--		--			break;
+--		--		end
+
+--		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 290,0);
+--		if x ~= -1 and y ~= -1 then   			
+
+--			touchDown(x,y);
+--			mSleep(30);
+--			touchUp(x,y);
+
 --			toast("点击啦加号" .. keyword,1);
 --			mSleep(1000);
 
---			touchDown(540,225);
+--			touchDown(x,y);
 --			mSleep(30);
---			touchUp(540,225);
+--			touchUp(x,y);
 
---			break;
---		end
+--			break;     
+--		end	
 
-		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 270,0);
+--		--		local x, y = findImage("hasdownloaded.png", 540, 190, 620, 310);
+--		--		if x ~= -1 and y ~= -1 then   
+	--		--			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
+	--		--			return false;
+	--		--		end
+
+	--		local x, y = findImageInRegionFuzzy("hasdownloaded.png",95,540, 190, 620, 310,0);
+	--		if x ~= -1 and y ~= -1 then   
+
+	----			dialog("已经下载过了！！！");    
+	--			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
+	--			return false;
+	--		end
+	--	end
+
+	for i =0,500,1 do
+		mSleep(2000);
+
+		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 290,0);
 		if x ~= -1 and y ~= -1 then   			
 
 			touchDown(x,y);
@@ -280,30 +338,17 @@ function SerachFuck(keyword,appid)
 			toast("点击啦加号" .. keyword,1);
 			mSleep(1000);
 
-			touchDown(540,225);
+			touchDown(x,y);
 			mSleep(30);
-			touchUp(540,225);
+			touchUp(x,y);
 
-			break;     
 		end	
-
---		local x, y = findImage("hasdownloaded.png", 540, 190, 620, 310);
---		if x ~= -1 and y ~= -1 then   
---			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
---			return false;
---		end
 
 		local x, y = findImageInRegionFuzzy("hasdownloaded.png",95,540, 190, 620, 310,0);
 		if x ~= -1 and y ~= -1 then   
-
-			dialog("已经下载过了！！！");    
 			toast("已经下载过了！！！" .. keyword.. x .. ":" ..y,1)
 			return false;
 		end
-	end
-
-	for i =0,200,1 do
-		mSleep(2000);
 
 		local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
 		if x ~= -1 and y ~= -1 then        
@@ -316,28 +361,44 @@ function SerachFuck(keyword,appid)
 		local imageDataList = {};
 		imageDataList[1] = {imageName = "在此设备上的.png",x11 = 70,y11 = 430,x12 = 580,y12 = 490,x21 = 490,y21 = 690};
 		imageDataList[2] = {imageName = "是否为免费项目.png",x11 = 80,y11 = 455,x12 = 565,y12 = 510,x21 = 200,y21 = 660};
+		imageDataList[3] = {imageName = "trequirepasswordfor.png",x11 = 80,y11 = 370,x12 = 565,y12 = 420,x21 = 300,y21 = 750};
+		imageDataList[4] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
+
 
 		findImageClickAreaList(imageDataList);
 
---		if findAndClickImage("蓝块.png",540,190,625,275) then
---			toast("下载成功并点击取消！！！",5);
---		end
+		--		if findAndClickImage("蓝块.png",540,190,625,275) then
+		--			toast("下载成功并点击取消！！！",5);
+		--		end
 
-		local x, y = findImageInRegionFuzzy("蓝块.png",100, 540,190,625,275,0);
+		local x, y = findImageInRegionFuzzy("蓝块.png",100, 540,190,625,310,0);
 		if x ~= -1 and y ~= -1 then   
+			toast('找到' .. "蓝块.png");  
 
-			mSleep(3000);
+			mSleep(5000);
 			touchDown(x,y);
 			mSleep(30);
 			touchUp(x,y);
 
---			dialog('找到' .. "蓝块.png");       
+			return true;
+			--			dialog('找到' .. "蓝块.png");       
 		else                               
 			toast('没有找到' .. "蓝块.png");       
 		end	
 
 	end
 end
+
+function NewDevice()
+	fakePerApp({"com.apple.Preferences","com.apple.AppStore"});
+	local appdl = appDel({},{CarrierType="3G"});
+	return appdl;
+end
+
+function SlimAppStore()
+	local bool,err = appSlim({"com.apple.AppStore"})
+	return bool;
+end 
 
 
 --如果普通版tsp可以加上该段代码
@@ -356,6 +417,38 @@ if bkvs ~= "1.0.9.3" then --自己上传的文件版本号
 	delFile(userPath().."/plugin/aso.tsl") --删除老版本
 end
 
+
+--如果普通版tsp可以加上该段代码
+local tsld = loadTSLibrary("pretender.tsl") --库加载
+if tsld.status == 0 then --验证判断
+	dialog("插件加载异常", 0)
+	return
+end
+require("TBackups") --需要加载
+--以上代码请在脚本开头先调用验证加载，只需加载一次
+
+local bkvs = BKVersions()
+if bkvs ~= "1.2.0.7" then --自己上传的文件版本号
+	delFile("/var/mobile/Media/TouchSprite/plugin/pretender.tsl") --删除老版本
+end
+
+
+--com.apple.Preferences
+--com.apple.AppStore
+--fakePerApp({"com.apple.Preferences","com.apple.AppStore"});
+--local appdl = appDel({},{CarrierName="中国移动",CarrierType="3G"});
+--if appdl then
+--    dialog("succeed", 0)
+--else
+--    dialog("failed", 0)
+--end
+
+--local bool,err = appSlim({"com.apple.AppStore"})
+--if err then
+--    dialog("failed:"..err, 0)
+--else
+--    dialog("succeed", 0)
+--end
 
 
 
@@ -506,10 +599,21 @@ closeApp("com.apple.AppStore");
 mSleep(1000);
 
 killVPN();
-connectVPN(3);
+resultTemp,globlaAccount,globlaPassword,globlaGameAccount,globlaKeyWords,globlaBunldeName,globlaAppID = getAccountInfo("http://ios.pettostudio.net/AccountInfo.aspx?action=GetIOSFullInfoByStateStr&state=success&configfilename=shuagame2.txt");
 
-loginAppStore(globlaAccount,globlaPassword,2,2);
+if resultTemp then
+	ipaUninstall(globlaBunldeName);	
+	SlimAppStore();	
+	clearSafari();
 
---1216807923
---SerachFuck("Garden","1213947069");
-SerachFuck("puzzle","1216807923");
+	connectVPN(6);	
+	NewDevice();	
+	loginAppStore(globlaAccount,globlaPassword,3,3);
+
+	----1216807923
+	----SerachFuck("Garden","1213947069");
+	SerachFuck(globlaKeyWords,globlaAppID);
+	
+	lua_restart();
+end
+
