@@ -9,6 +9,12 @@ globlaKeyWords = "";
 globlaBunldeName="";
 globlaAppID="";
 
+globlaIsInDownloading = false;
+
+globlaInstallX=0;
+globlaInstallY=0;
+
+globalAllIsDone = false;
 --globlaAccount = "a8673601@icloud.com";
 --globlaPassword = "Asd112211";
 
@@ -49,17 +55,18 @@ function getAccountInfo(url)
 end
 
 function findAndClickImage(imageName,x1,y1,x2,y2)
-	toast('正在寻找...' .. imageName);        
+--	toast('正在寻找...' .. imageName);        
 --	x, y = findImageInRegionFuzzy(imageName,90, x1, y1, x2, y2,0);--在（0,0）到（120,480）寻找刚刚截图的图片
 
 	x,y = findImage(imageName,x1, y1, x2, y2);
 	if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+		toast('findImage:找到' .. imageName .. x .. y);       
 		touchDown(x,y);
 		mSleep(30);
 		touchUp(x,y);
 		return true;
 	else                               --如果找不到符合条件的图片
-		toast('没有找到' .. imageName);       
+--		toast('没有找到' .. imageName);       
 		return false;
 	end
 end
@@ -68,6 +75,7 @@ function findImageClickArea(imageName,x11,y11,x12,y12,x21,y21)
 --	toast('正在寻找...' .. imageName);        
 	x, y = findImage(imageName, x11, y11, x12, y12);--在（0,0）到（120,480）寻找刚刚截图的图片
 	if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
+		toast('findImageClickArea:找到' .. imageName .. x .. y);  
 		touchDown(x21,y21);
 		mSleep(30);
 		touchUp(x21,y21);
@@ -135,13 +143,32 @@ function reLogin(account,password,retryCount)
 
 end
 
+function loginOutAppStore()
+	closeApp("com.apple.AppStore"); 
+	mSleep(1000);
+	r = runApp("com.apple.AppStore");
+	if r == 0 then
+		mSleep(1000);
+		appstoreLogout();
+
+		for i = 0,100,1 do
+			local status = appstoreStatus();
+			mSleep(1000);
+			toast(tostring(status),1);
+			if status == 0 then
+				break;
+			end
+		end
+	end
+end
+
 function loginAppStore(account,password,retryCount,checkCount)
 	closeApp("com.apple.AppStore"); 
-	mSleep(2000);
+	mSleep(1000);
 	r = runApp("com.apple.AppStore");
 	if r == 0 then
 		toast("启动 AppStore 成功",1);
-
+		mSleep(2000);
 		local hasLoginned = true;
 		for j=0,retryCount,1 do			
 			toast("第" .. j .. "次执行登陆",1);
@@ -156,7 +183,7 @@ function loginAppStore(account,password,retryCount,checkCount)
 				local imageDataList = {};
 				imageDataList[1] = {imageName = "未能登录.png",x11 = 200,y11 = 470,x12 = 410,y12 = 530,x21 = 289,y21 = 648};
 				imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
---				local status = findImageClickArea("未能登录.png",200,470,410,530,289,648);
+				--				local status = findImageClickArea("未能登录.png",200,470,410,530,289,648);
 
 				local status = findImageClickAreaList(imageDataList);
 				if status then 
@@ -167,12 +194,37 @@ function loginAppStore(account,password,retryCount,checkCount)
 					toast(i .. "次检查",1);					
 				end
 
+				--				local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
+				--				if x ~= -1 and y ~= -1 then        
+				--					inputText(password);
+				--					inputText("\n");
+				--				else                               
+				----					toast('没有找到' .. "登录 iTunes Store.png");       
+				--				end	
+
+				if findAndClickImage("使用现有的appleid.png",150,510,500,570) then
+					mSleep(5000);
+				end
+
 				local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
-				if x ~= -1 and y ~= -1 then        
-					inputText(password);
-					inputText("\n");
+				if x ~= -1 and y ~= -1 then     
+					local x2, y2 = findImage("xample.png", 85, 274, 380, 314);
+					if x2 ~= -1 and y2 ~= -1 then        
+						inputText(globlaAccount);
+						inputText("\n");
+
+						mSleep(300);
+
+						inputText(globlaPassword);
+						mSleep(300);
+						inputText("\n");
+					else
+						inputText(globlaPassword);
+						mSleep(300);
+						inputText("\n");
+					end
 				else                               
-					toast('没有找到' .. "登录 iTunes Store.png");       
+					--			toast('没有找到' .. "登录 iTunes Store.png");       
 				end	
 
 				if findImageClickArea("此AppleID只能在.png",80,430,560,480,300,700) then
@@ -210,12 +262,12 @@ function SerachFuck(keyword,appid)
 		mSleep(1000);
 	end
 
---	touchDown(432,1068);
---	mSleep(30);
---	touchUp(432,1068);
+	--	touchDown(432,1068);
+	--	mSleep(30);
+	--	touchUp(432,1068);
 
---老的点击搜索按钮
---[====[
+	--老的点击搜索按钮
+	--[====[
 	for i = 0,50,1 do
 		mSleep(1000);
 
@@ -237,9 +289,9 @@ function SerachFuck(keyword,appid)
 
 	for i = 0,50,1 do
 		mSleep(1500);
---		if findAndClickImage("searchtop.png",15,60,600,110) then
---			break;
---		end
+		--		if findAndClickImage("searchtop.png",15,60,600,110) then
+		--			break;
+		--		end
 
 		local x, y = findImageInRegionFuzzy("searchtop.png",95,15,60,600,110,0);
 		if x ~= -1 and y ~= -1 then   
@@ -255,7 +307,7 @@ function SerachFuck(keyword,appid)
 
 	AppstoreTopApp(appid);
 	inputText(keyword .. "\n"); 
-]====]--
+	]====]--
 
 	hasClickedSearchPNG = false;
 	hasClickedSearchtopPNG = false;
@@ -286,6 +338,7 @@ function SerachFuck(keyword,appid)
 
 				AppstoreTopApp(appid);
 				inputText(keyword .. "\n"); 
+				inputText("\n");
 
 				hasClickedSearchtopPNG = true;
 			end
@@ -301,7 +354,7 @@ function SerachFuck(keyword,appid)
 		end
 
 		findAndClickImage("使用现有的appleid.png",150,510,500,570);
-
+		findAndClickImage("左上角search.png",5,50,180,110);
 
 		local x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
 		if x ~= -1 and y ~= -1 then     
@@ -313,13 +366,15 @@ function SerachFuck(keyword,appid)
 				mSleep(300);
 
 				inputText(globlaPassword);
+				mSleep(300);
 				inputText("\n");
 			else
 				inputText(globlaPassword);
+				mSleep(300);
 				inputText("\n");
 			end
 		else                               
-			toast('没有找到' .. "登录 iTunes Store.png");       
+			--			toast('没有找到' .. "登录 iTunes Store.png");       
 		end	
 
 
@@ -339,7 +394,7 @@ function SerachFuck(keyword,appid)
 		findImageClickAreaList(imageDataList);
 	end
 
-	for i =0,80,1 do
+	for i =0,3000,1 do
 		mSleep(2000);
 
 		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 290,0);
@@ -355,6 +410,9 @@ function SerachFuck(keyword,appid)
 			touchDown(x,y);
 			mSleep(30);
 			touchUp(x,y);
+
+			globlaInstallX = x +60;
+			globlaInstallY = y + 20;
 
 		end	
 
@@ -398,13 +456,15 @@ function SerachFuck(keyword,appid)
 				mSleep(300);
 
 				inputText(globlaPassword);
+				mSleep(300);
 				inputText("\n");
 			else
 				inputText(globlaPassword);
+				mSleep(300);
 				inputText("\n");
 			end
 		else                               
-			toast('没有找到' .. "登录 iTunes Store.png");       
+			--			toast('没有找到' .. "登录 iTunes Store.png");       
 		end	
 
 		local x, y = findImage("无法连接到AppStore.png", 90, 500, 550, 585);
@@ -429,8 +489,9 @@ function SerachFuck(keyword,appid)
 		local x, y = findImageInRegionFuzzy("蓝块.png",100, 540,190,625,310,0);
 		if x ~= -1 and y ~= -1 then   
 			toast('找到' .. "蓝块.png");  
+			globalAllIsDone = true;
 
-			mSleep(5000);
+			mSleep(10000);
 			touchDown(x,y);
 			mSleep(30);
 			touchUp(x,y);
@@ -438,7 +499,7 @@ function SerachFuck(keyword,appid)
 			return true;
 			--			dialog('找到' .. "蓝块.png");       
 		else                               
-			toast('没有找到' .. "蓝块.png");       
+			--			toast('没有找到' .. "蓝块.png");       
 		end	
 	end
 
@@ -467,10 +528,11 @@ end
 require("ascmd") --需要加载
 --以上代码请在脚本开头先调用验证加载，只需加载一次
 
-local bkvs = ASOVersions()
-if bkvs ~= "1.0.9.3" then --自己上传的文件版本号
-	delFile(userPath().."/plugin/aso.tsl") --删除老版本
-end
+--local bkvs = ASOVersions()
+--toast(bkvs,1);
+--if bkvs ~= "1.0.9.3" then --自己上传的文件版本号
+--	delFile(userPath().."/plugin/aso.tsl") --删除老版本
+--end
 
 
 --如果普通版tsp可以加上该段代码
@@ -486,6 +548,11 @@ local bkvs = BKVersions()
 if bkvs ~= "1.2.0.7" then --自己上传的文件版本号
 	delFile("/var/mobile/Media/TouchSprite/plugin/pretender.tsl") --删除老版本
 end
+
+local status = appstoreStatus() 
+dialog(status, 0)
+
+loginOutAppStore();
 
 
 --com.apple.Preferences
@@ -661,9 +728,16 @@ mSleep(1000);
 --	toast(tostring(bool),10);
 --end
 
---[====[ ]====]--
+--[====[
 
 killVPN();
+
+SlimAppStore();	
+clearSafari();
+
+loginOutAppStore();
+
+mSleep(5000);
 
 local thread = require('thread')
 local thread_id1 = thread.create(function()
@@ -693,16 +767,16 @@ end
 --	toast("一键新机成功" .. tostring(bool),1);
 --end
 
-SlimAppStore();	
-clearSafari();
 
 local thread_id2 = thread.create(function()
 		mSleep(10000);
-		local killmeCountLimit = 48;
+		local killmeCountLimit = 72;
 		local killmeCount = 0;
+
+		wufagoumaiIsShown = false;
 		while true do
 
-			toast("开始杀傻逼……",1)
+			toast("开始杀傻逼……" .. killmeCount,1)
 
 			if killmeCount >= killmeCountLimit then
 				toast("超过最大阈值" .. killmeCountLimit .. "，自杀...");
@@ -712,9 +786,14 @@ local thread_id2 = thread.create(function()
 			local imageDataList = {};
 			imageDataList[1] = {imageName = "存储容量几乎已满.png",x11 = 100,y11 = 470,x12 = 520,y12 = 530,x21 = 190,y21 = 650};
 			imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
-			imageDataList[3] = {imageName = "xample.png",x11 = 85,y11 = 274,x12 = 380,y12 = 314,x21 = 180,y21 = 440};
+			--			imageDataList[3] = {imageName = "无法购买.png",x11 = 240,y11 = 440,x12 = 400,y12 = 530,x21 = 320,y21 = 670};
+			imageDataList[3] = {imageName = "savepasswordforfree.png",x11 = 120,y11 = 440,x12 = 520,y12 = 490,x21 = 175,y21 = 690};
 
-			status = findImageClickAreaList(imageDataList);
+			if not globlaIsInDownloading then
+				imageDataList[4] = {imageName = "xample.png",x11 = 85,y11 = 274,x12 = 380,y12 = 314,x21 = 180,y21 = 440};
+			end
+
+			findImageClickAreaList(imageDataList);
 
 			local x, y = findImage("无法连接到AppStore.png", 90, 500, 550, 585);
 			if x ~= -1 and y ~= -1 then        
@@ -737,12 +816,49 @@ local thread_id2 = thread.create(function()
 
 				mSleep(1000);
 
-				touchDown(185,615);
-				mSleep(30);
-				touchUp(185,615);
+				if globlaIsInDownloading then
+					touchDown(450,615);
+					mSleep(30);
+					touchUp(450,615);
+				else
+					touchDown(185,615);
+					mSleep(30);
+					touchUp(185,615);
 
-				lua_restart();
+					lua_restart();
+				end
 			end	
+
+
+
+			if findImageClickArea("无法购买.png",240,440,400,530,320,670) then
+				if globlaInstallX ~= 0 and globlaInstallY ~=0 then
+
+					wufagoumaiIsShown = true;
+					mSleep(5000);
+					touchDown(globlaInstallX,globlaInstallY);
+					mSleep(30);
+					touchUp(globlaInstallX,globlaInstallY);
+
+					mSleep(1000);
+					touchDown(globlaInstallX,globlaInstallY);
+					mSleep(30);
+					touchUp(globlaInstallX,globlaInstallY);
+				end
+			end
+
+			--			if (wufagoumaiIsShown or killmeCount > 20) and killmeCount % 2 == 0 and not globalAllIsDone then
+			--				toast("点击下载的圈圈...X:".. globlaInstallX .. ";Y:" .. globlaInstallY ,1);
+
+			--				touchDown(globlaInstallX,globlaInstallY);
+			--				mSleep(30);
+			--				touchUp(globlaInstallX,globlaInstallY);
+
+			--				mSleep(1000);
+			--				touchDown(globlaInstallX,globlaInstallY);
+			--				mSleep(30);
+			--				touchUp(globlaInstallX,globlaInstallY);
+			--			end
 
 			killmeCount = killmeCount + 1;
 			mSleep(10000);
@@ -761,6 +877,7 @@ if resultTemp then
 
 	----1216807923
 	----SerachFuck("Garden","1213947069");
+	globlaIsInDownloading = true;
 	local r2 = SerachFuck(globlaKeyWords,globlaAppID);
 
 	if r2 then
@@ -769,3 +886,4 @@ if resultTemp then
 		lua_restart();			
 	end
 end
+]====]--
