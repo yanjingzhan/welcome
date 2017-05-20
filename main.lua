@@ -516,6 +516,41 @@ function SlimAppStore()
 	return bool;
 end 
 
+function logoutAppStoreOnUI(timeout)
+
+	closeApp("com.apple.Preferences");
+	mSleep(1000);
+	openURL("prefs:root=STORE");
+
+--	mSleep(2000);
+	local time1 = os.time();
+	while true do
+		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
+		if x ~= -1 and y ~= -1 then
+			toast("找到appleid登录用.png;" .. x .. ":" .. y,1);
+
+			touchDown(280,245);
+			mSleep(30);
+			touchUp(280,245);
+			
+			mSleep(1000);
+		end	
+
+		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 640,0);
+		if x ~= -1 and y ~= -1 then
+			toast("注销登录用.png;" .. x .. ":" .. y,1);
+
+			touchDown(310,600);
+			mSleep(30);
+			touchUp(310,600);
+			
+			mSleep(3000);
+		end
+		
+		mSleep(1000);
+	end
+end
+
 
 --如果普通版tsp可以加上该段代码
 local tsld = loadTSLibrary("aso.tsl") --库加载
@@ -549,11 +584,9 @@ if bkvs ~= "1.2.0.7" then --自己上传的文件版本号
 	delFile("/var/mobile/Media/TouchSprite/plugin/pretender.tsl") --删除老版本
 end
 
-local status = appstoreStatus() 
-dialog(status, 0)
 
-loginOutAppStore();
-
+--openURL("prefs:root=STORE");
+logoutAppStoreOnUI(10);
 
 --com.apple.Preferences
 --com.apple.AppStore
@@ -716,9 +749,9 @@ dialog("识别到的内容:"..ret)
 --	toast('没有找到' .. "登录 iTunes Store.png");       
 --end
 
-mSleep(1000);
-closeApp("com.apple.AppStore"); 
-mSleep(1000);
+--mSleep(1000);
+--closeApp("com.apple.AppStore"); 
+--mSleep(1000);
 
 --local bool,err = NewDevice();
 
