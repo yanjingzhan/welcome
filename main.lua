@@ -517,11 +517,6 @@ function SlimAppStore()
 end 
 
 function logoutAppStoreOnUI(timeout)
-
-	closeApp("com.apple.Preferences");
-	mSleep(1000);
-	openURL("prefs:root=STORE");
-
 --	mSleep(2000);
 	local time1 = os.time();
 	while true do
@@ -532,22 +527,80 @@ function logoutAppStoreOnUI(timeout)
 			touchDown(280,245);
 			mSleep(30);
 			touchUp(280,245);
-			
+
 			mSleep(1000);
 		end	
 
 		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 640,0);
 		if x ~= -1 and y ~= -1 then
-			toast("注销登录用.png;" .. x .. ":" .. y,1);
+			toast("找到注销登录用.png;" .. x .. ":" .. y,1);
 
 			touchDown(310,600);
 			mSleep(30);
 			touchUp(310,600);
-			
+
 			mSleep(3000);
 		end
-		
+
+		local x, y = findImageInRegionFuzzy("登录登录用.png",95,10, 205, 185, 280,0);
+		if x ~= -1 and y ~= -1 then
+			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
+			return tru;
+		end
+
 		mSleep(1000);
+	end
+end 
+
+function  loginAppStoreOnUI(timeout)
+	local time1 = os.time();
+	while true do
+		local x, y = findImageInRegionFuzzy("登录登录用.png",95,10, 205, 185, 280,0);
+		if x ~= -1 and y ~= -1 then
+			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
+
+			touchDown(280,245);
+			mSleep(30);
+			touchUp(280,245);
+
+			mSleep(1000);
+		end
+
+		local x, y = findImageInRegionFuzzy("appleid登录登录用.png",95,160, 200, 500, 290,0);
+		if x ~= -1 and y ~= -1 then
+			toast("找到appleid登录登录用.png;" .. x .. ":" .. y,1);
+
+			inputText(globlaAccount);
+			inputText("\n");
+
+			mSleep(300);
+
+			inputText(globlaPassword);
+			mSleep(300);
+			inputText("\n");
+
+			mSleep(1000);
+		end
+
+		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
+		if x ~= -1 and y ~= -1 then
+			toast("找到appleid登录用.png;" .. x .. ":" .. y,1);
+
+			return true;
+		end	
+
+		local x, y = findImageInRegionFuzzy("thisappleidisonly登录用.png", 95,70, 400, 420, 460,0);
+		if x ~= -1 and y ~= -1 then
+			toast("thisappleidisonly登录用.png;" .. x .. ":" .. y,1);
+
+			touchDown(320,720);
+			mSleep(30);
+			touchUp(320,720);
+
+			return true;
+		end	
+
+		mSleep(2000);
 	end
 end
 
@@ -586,7 +639,15 @@ end
 
 
 --openURL("prefs:root=STORE");
-logoutAppStoreOnUI(10);
+--logoutAppStoreOnUI(10) ;
+
+
+closeApp("com.apple.Preferences");
+mSleep(1000);
+openURL("prefs:root=STORE");
+
+logoutAppStoreOnUI(10) ;
+loginAppStoreOnUI(10);
 
 --com.apple.Preferences
 --com.apple.AppStore
