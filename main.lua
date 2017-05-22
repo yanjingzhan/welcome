@@ -519,7 +519,11 @@ end
 function logoutAppStoreOnUI(timeout)
 --	mSleep(2000);
 	local time1 = os.time();
+
 	while true do
+
+		findAndClickImage("存储容量几乎已满.png",100,470,520,530,190,50);
+
 		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
 			toast("找到appleid登录用.png;" .. x .. ":" .. y,1);
@@ -531,7 +535,7 @@ function logoutAppStoreOnUI(timeout)
 			mSleep(1000);
 		end	
 
-		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 640,0);
+		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 660,0);
 		if x ~= -1 and y ~= -1 then
 			toast("找到注销登录用.png;" .. x .. ":" .. y,1);
 
@@ -545,16 +549,25 @@ function logoutAppStoreOnUI(timeout)
 		local x, y = findImageInRegionFuzzy("登录登录用.png",95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
 			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
-			return tru;
+			return true;
 		end
 
 		mSleep(1000);
+
+		local time2 = os.time();
+
+		if (time2 - time1) >= timeout then
+			return false;
+		end
 	end
 end 
 
 function  loginAppStoreOnUI(timeout)
 	local time1 = os.time();
 	while true do
+
+		findAndClickImage("存储容量几乎已满.png",100,470,520,530,190,50);
+
 		local x, y = findImageInRegionFuzzy("登录登录用.png",95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
 			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
@@ -563,23 +576,44 @@ function  loginAppStoreOnUI(timeout)
 			mSleep(30);
 			touchUp(280,245);
 
-			mSleep(1000);
+			mSleep(2000);
 		end
 
-		local x, y = findImageInRegionFuzzy("appleid登录登录用.png",95,160, 200, 500, 290,0);
+		local x, y = findImageInRegionFuzzy("appleid登录登录用.png",90,190, 220, 440, 280,0);
 		if x ~= -1 and y ~= -1 then
 			toast("找到appleid登录登录用.png;" .. x .. ":" .. y,1);
 
-			inputText(globlaAccount);
-			inputText("\n");
+			local x, y = findImageInRegionFuzzy("框内的appleid登陆用.png",90,87, 309, 210, 350,0);
+			if x ~= -1 and y ~= -1 then
+				toast("框内的appleid登陆用.png;" .. x .. ":" .. y,1);
 
-			mSleep(300);
+				inputText(globlaAccount);
+				inputText("\n");
 
-			inputText(globlaPassword);
-			mSleep(300);
-			inputText("\n");
+				mSleep(300);
+				inputText(globlaPassword);
+				mSleep(300);
+				inputText("\n");
 
-			mSleep(1000);
+			else
+				keyDown("DeleteOrBackspace");
+				mSleep(5000);
+				keyUp("DeleteOrBackspace");
+
+				inputText(globlaAccount);
+				inputText("\n");
+
+				mSleep(300);
+
+--				keyDown("DeleteOrBackspace");
+--				mSleep(5000);
+--				keyUp("DeleteOrBackspace");
+
+				inputText(globlaPassword);
+				mSleep(300);
+				inputText("\n");
+			end
+			mSleep(4000);
 		end
 
 		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
@@ -600,8 +634,55 @@ function  loginAppStoreOnUI(timeout)
 			return true;
 		end	
 
-		mSleep(2000);
+		mSleep(1000);
+
+		local time2 = os.time();
+
+		if (time2 - time1) >= timeout then
+			return false;
+		end
 	end
+end
+
+function CleanAccounts()
+	os.execute("cp -rf /User/Library/Accounts/new/*.* /User/Library/Accounts/");
+	os.execute("chown -R mobile:mobile /User/Library/Accounts/*.*");
+end
+
+
+function CleanAppStore()
+	os.execute("rm /User/Library/com.apple.itunesstored/itunesstored_private.sqlitedb-shm");
+	os.execute("rm /User/Library/com.apple.itunesstored/itunesstored_private.sqlitedb-wal");
+
+	os.execute("rm /User/Library/com.apple.itunesstored/itunesstored2.sqlitedb-shm");
+	os.execute("rm /User/Library/com.apple.itunesstored/itunesstored2.sqlitedb-wal");
+
+	os.execute("rm /User/Library/com.apple.itunesstored/play_activity.sqlitedb-shm");
+	os.execute("rm /User/Library/com.apple.itunesstored/play_activity.sqlitedb-wal");
+
+	os.execute("cp -rf /User/Library/com.apple.itunesstored/new/*.* /User/Library/com.apple.itunesstored/");
+
+	os.execute("chown -R mobile:mobile /User/Library/com.apple.itunesstored/*.*");
+end
+
+function  SaveLoginOvertimeCount(count)
+	writeFileString("/var/mobile/Media/TouchSprite/config/LoginOvertimeCount.txt",tostring(count));  
+end
+
+function  LoadLoginOvertimeCount()
+	if isFileExist("/var/mobile/Media/TouchSprite/config/LoginOvertimeCount.txt") then
+		return readFileString("/var/mobile/Media/TouchSprite/config/LoginOvertimeCount.txt");  
+	else
+		return 0;
+	end
+end
+
+function  SaveLog(msg)
+	writeFileString("/var/mobile/Media/TouchSprite/config/CleanLog.txt","\n" .. os.date("%Y-%m-%d %H:%M:%S") .. "," .. msg,"a");  
+end
+
+function  Reboot()
+	os.execute("reboot");  
 end
 
 
@@ -632,83 +713,27 @@ end
 require("TBackups") --需要加载
 --以上代码请在脚本开头先调用验证加载，只需加载一次
 
-local bkvs = BKVersions()
-if bkvs ~= "1.2.0.7" then --自己上传的文件版本号
-	delFile("/var/mobile/Media/TouchSprite/plugin/pretender.tsl") --删除老版本
-end
+--local bkvs = BKVersions()
+--if bkvs ~= "1.2.0.7" then --自己上传的文件版本号
+--	delFile("/var/mobile/Media/TouchSprite/plugin/pretender.tsl") --删除老版本
+--end
+
+require "TSLib";
 
 
+--SaveLoginOvertimeCount(10);
+--toast(LoadLoginOvertimeCount(),1);
+--SaveLog("reboot");
+
+--CleanAccounts();
+--CleanAppStore();
+
+--closeApp("com.apple.Preferences");
+--mSleep(1000);
 --openURL("prefs:root=STORE");
+
 --logoutAppStoreOnUI(10) ;
-
-
-closeApp("com.apple.Preferences");
-mSleep(1000);
-openURL("prefs:root=STORE");
-
-logoutAppStoreOnUI(10) ;
-loginAppStoreOnUI(10);
-
---com.apple.Preferences
---com.apple.AppStore
---fakePerApp({"com.apple.Preferences","com.apple.AppStore"});
---local appdl = appDel({},{CarrierName="中国移动",CarrierType="3G"});
---if appdl then
---    dialog("succeed", 0)
---else
---    dialog("failed", 0)
---end
-
---local bool,err = appSlim({"com.apple.AppStore"})
---if err then
---    dialog("failed:"..err, 0)
---else
---    dialog("succeed", 0)
---end
-
-
-
-
---AppStore
-
---closeApp("com.apple.AppStore"); 
---mSleep(3000);
-
---r = runApp("com.apple.AppStore");
---if r == 0 then
---	toast("启动 AppStore 成功",1);
-
---	hasLoginned = false;
---	for j=0,2,1 do			
---		toast("第" .. j .. "次执行登陆",1);
-
---		appstoreLogout();
---mSleep(2000);
---appstoreLogin(account,password);
-
---for i=0,10,1 do
---	mSleep(2000);
---	local status = appstoreStatus(0) 
---	if status == 1 then 
---		toast("登录成功",1);
---		hasLoginned = true;
---		break
---	else
---		toast(i .. "次登录失败，" .. status,1);
---	end
---end
-
---if hasLoginned then
---	break
---end
---end
-
---if not hasLoginned then
---	toast('执行登陆失败！！！',1);
---end
---else
---toast("启动 AppStore 失败",1);
---end
+--loginAppStoreOnUI(10);
 
 --找字
 --[====[
@@ -729,115 +754,30 @@ local ret = tsOcrText(index, 180, 170, 370, 230, "787878 , 797979", 70)
 dialog("识别到的内容:"..ret)
 ]====] 
 
+local timeOutCount = tonumber(LoadLoginOvertimeCount());
+toast("登陆失败次数：" .. timeOutCount,1);
 
-----找图
---x, y = findImage("空瓶装水解谜.png", 180, 170, 370, 230);--在（0,0）到（120,480）寻找刚刚截图的图片
---if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
---	toast(x..y);                   --显示坐标
---else                               --如果找不到符合条件的图片
---	toast('没有找到图片!');        
---end
+if timeOutCount > 3 then
+	CleanAccounts();
+	mSleep(1000);
+	CleanAppStore();
+	mSleep(1000);
 
+	SaveLog("reboot");
+	Reboot();
 
---getAccountInfo("http://ios.pettostudio.net/AccountInfo.aspx?action=GetIOSFullInfoByStateStr&state=success");
---local ts = require("ts");
---code,msg = ts.tsDownload("/var/mobile/Media/TouchSprite/gamelogo1.jpg","http://p0.so.qhmsg.com/sdr/720_1080_/t01f0c2107148464d50.jpg");
-
---local ts = require("ts");
-
---code,status = ts.tsDownload("1.jpg","http://ios.pettostudio.net/images/shuiping.png");
-----同样支持ftp地址
-----"1.jpg"（如只填文件名，默认保存到触动res目录下）
---dialog(code,0)
---dialog(status,0)
-
-
---recognize = ocrText(180, 170 , 490, 245, 1);  --OCR 英文识别
---mSleep(1000); 
---dialog("识别出的字符："..recognize, 0);
---res = killVPN();
---toast(tostring(res) .. ":killVPN",1);
---res = connectVPN(3);
---toast(tostring(res) .. ":connectVPN",1);
-
---if not res then 
---	findAndClickImage("取消.png",60,420,310,490);
---	findAndClickImage("好.png",250,650,400,700);
---end	
-
-
-
---if not res then 
---	findAndClickImage("好.png",250,650,400,700);
---end	
-
-
---local t = loginAppStore(account,password,2,2);
---toast(tostring(t) .. ":loginAppStore",10);
-
---if t then
---	SerachFuck("记忆","1216807923");
---end
-
---local imageDataList = {};
---imageDataList[1] = {imageName = "未能登录.png",x11 = 200,y11 = 470,x12 = 410,y12 = 530,x21 = 289,y21 = 648};
---imageDataList[1] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
-
-
---r = runApp("com.apple.AppStore");
-
-
---local hasLoginned = true;
---appstoreLogout();
---mSleep(5000);
---appstoreLogin(globlaAccount,globlaPassword,2,2);
-
---loginAppStore(globlaAccount,globlaPassword,2,2);
---local loginResult = loginAppStore(globlaAccount,globlaPassword,2,2);
---if not loginResult then
---	return;
---end
-
---local imageDataList = {};
---imageDataList[1] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
---findImageClickAreaList(imageDataList);
-
---x, y = findImage("登录 iTunes Store.png", 178, 187, 485, 269);--在（0,0）到（120,480）寻找刚刚截图的图片
---if x ~= -1 and y ~= -1 then        --如果在指定区域找到某图片符合条件
---	inputText(password);
---	inputText("\n")
---else                               --如果找不到符合条件的图片
---	toast('没有找到' .. "登录 iTunes Store.png");       
---end
-
---mSleep(1000);
---closeApp("com.apple.AppStore"); 
---mSleep(1000);
-
---local bool,err = NewDevice();
-
---if err then
---	toast(tostring(bool) .. ":" .. err,10);
---else
---	toast(tostring(bool),10);
---end
-
---[====[
+	return;
+end
 
 killVPN();
 
 SlimAppStore();	
 clearSafari();
 
-loginOutAppStore();
-
-mSleep(5000);
-
 local thread = require('thread')
 local thread_id1 = thread.create(function()
 		return NewDevice();
 	end);
-
 
 local ok,bool,err = thread.wait(thread_id1)
 if err then
@@ -851,16 +791,6 @@ else
 		lua_restart();
 	end
 end
-
---local bool,err = NewDevice();
-
---if err then
---	toast("一键新机失败." .. tostring(bool) .. ":" .. err,1);
---	lua_restart();
---else
---	toast("一键新机成功" .. tostring(bool),1);
---end
-
 
 local thread_id2 = thread.create(function()
 		mSleep(10000);
@@ -882,12 +812,17 @@ local thread_id2 = thread.create(function()
 			imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
 			--			imageDataList[3] = {imageName = "无法购买.png",x11 = 240,y11 = 440,x12 = 400,y12 = 530,x21 = 320,y21 = 670};
 			imageDataList[3] = {imageName = "savepasswordforfree.png",x11 = 120,y11 = 440,x12 = 520,y12 = 490,x21 = 175,y21 = 690};
-
-			if not globlaIsInDownloading then
-				imageDataList[4] = {imageName = "xample.png",x11 = 85,y11 = 274,x12 = 380,y12 = 314,x21 = 180,y21 = 440};
-			end
+			imageDataList[4] = {imageName = "theitunesstoreisunable杀傻逼用.png",x11 = 75,y11 = 435,x12 = 560,y12 = 485,x21 = 320,y21 = 700};
+			imageDataList[5] = {imageName = "没有被授权使用杀傻逼用.png",x11 = 195,y11 = 525,x12 = 440,y12 = 580,x21 = 320,y21 = 650};
 
 			findImageClickAreaList(imageDataList);
+
+			local x, y = findImageInRegionFuzzy("xample.png",90, 90, 500, 550, 585,0);
+			if x ~= -1 and y ~= -1 then        
+				touchDown(180,440);
+				mSleep(30);
+				touchUp(180,440);
+			end	
 
 			local x, y = findImage("无法连接到AppStore.png", 90, 500, 550, 585);
 			if x ~= -1 and y ~= -1 then        
@@ -965,12 +900,33 @@ resultTemp,globlaAccount,globlaPassword,globlaGameAccount,globlaKeyWords,globlaB
 if resultTemp then
 	ipaUninstall(globlaBunldeName);	
 
-	connectVPN(6);	
+	connectVPN(6);
 
-	loginAppStore(globlaAccount,globlaPassword,3,3);
+	closeApp("com.apple.Preferences");
+	mSleep(1000);
+	openURL("prefs:root=STORE");
 
-	----1216807923
-	----SerachFuck("Garden","1213947069");
+	if logoutAppStoreOnUI(180) then
+		toast("登出成功",1);
+	else
+		toast("登出失败",1);
+		SaveLoginOvertimeCount(timeOutCount + 1);
+		lua_restart();
+	end
+
+
+	if loginAppStoreOnUI(180) then
+		toast("登陆成功",1);
+		SaveLoginOvertimeCount(0);
+	else
+		toast("登陆失败",1);
+		SaveLoginOvertimeCount(timeOutCount + 1);
+		lua_restart();
+	end
+
+	closeApp("com.apple.Preferences");
+	mSleep(1000);
+
 	globlaIsInDownloading = true;
 	local r2 = SerachFuck(globlaKeyWords,globlaAppID);
 
@@ -980,4 +936,3 @@ if resultTemp then
 		lua_restart();			
 	end
 end
-]====]--
