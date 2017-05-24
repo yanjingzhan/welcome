@@ -262,70 +262,28 @@ function SerachFuck(keyword,appid)
 		mSleep(1000);
 	end
 
-	--	touchDown(432,1068);
-	--	mSleep(30);
-	--	touchUp(432,1068);
+	hasClickedSearchPNG = false;
+	hasClickedSearchtopPNG = false;
 
-	--老的点击搜索按钮
-	--[====[
-	for i = 0,50,1 do
-		mSleep(1000);
+	for i = 0,200,1 do
+		if isFrontApp("com.apple.AppStore") ~= 1 then
 
+			runApp("com.apple.AppStore"); 
+		end
+
+		mSleep(2000);
+
+--		if not hasClickedSearchPNG then
 		local x, y = findImageInRegionFuzzy("search.png",90,400,1040,477,1120,0);
 		if x ~= -1 and y ~= -1 then   
 			touchDown(x ,y);
 			mSleep(30);
 			touchUp(x,y);
 
-			break;
+			hasClickedSearchPNG = true;
+
 		end
-	end
-
-	mSleep(1000);
-
-	touchDown(130,86);
-	mSleep(30);
-	touchUp(130,86);
-
-	for i = 0,50,1 do
-		mSleep(1500);
-		--		if findAndClickImage("searchtop.png",15,60,600,110) then
-		--			break;
-		--		end
-
-		local x, y = findImageInRegionFuzzy("searchtop.png",95,15,60,600,110,0);
-		if x ~= -1 and y ~= -1 then   
-			touchDown(x + 100,y);
-			mSleep(30);
-			touchUp(x + 100,y);
-
-			break;
-		end
-	end
-
-	mSleep(1000);             
-
-	AppstoreTopApp(appid);
-	inputText(keyword .. "\n"); 
-	]====]--
-
-	hasClickedSearchPNG = false;
-	hasClickedSearchtopPNG = false;
-
-	for i = 0,200,1 do
-		mSleep(2000);
-
-		if not hasClickedSearchPNG then
-			local x, y = findImageInRegionFuzzy("search.png",90,400,1040,477,1120,0);
-			if x ~= -1 and y ~= -1 then   
-				touchDown(x ,y);
-				mSleep(30);
-				touchUp(x,y);
-
-				hasClickedSearchPNG = true;
-
-			end
-		end
+--		end
 
 		if not hasClickedSearchtopPNG then 
 			local x, y = findImageInRegionFuzzy("searchtop.png",95,15,60,600,110,0);
@@ -345,12 +303,23 @@ function SerachFuck(keyword,appid)
 		end
 
 
+		local x, y = findImageInRegionFuzzy("searchtop.png",95,240,60,460,110,0);
+		if x ~= -1 and y ~= -1 then   
+			touchDown(x + 100,y);
+			mSleep(30);
+			touchUp(x + 100,y);
+
+			mSleep(1000);             
+
+			AppstoreTopApp(appid);
+			inputText("\b\b\b\b\b\b\b\b\b\b" .. keyword .. "\n"); 
+			inputText("\n");
+		end
+
 		local x, y = findImage("gamelogo1.png", 188, 173, 521, 295);
 		if x ~= -1 and y ~= -1 then   
 			toast("找到了" .. keyword,1)
-			break;
-		else                               
-			toast("第".. i .. '次没有找到' .. keyword);       
+			break;   
 		end
 
 		findAndClickImage("使用现有的appleid.png",150,510,500,570);
@@ -394,8 +363,13 @@ function SerachFuck(keyword,appid)
 		findImageClickAreaList(imageDataList);
 	end
 
-	for i =0,3000,1 do
+	for i =0,2000,1 do
+		if isFrontApp("com.apple.AppStore") ~= 1 then
+			runApp("com.apple.AppStore"); 
+		end
+
 		mSleep(2000);
+
 
 		local x, y = findImageInRegionFuzzy("加号.png",95, 504, 190, 620, 290,0);
 		if x ~= -1 and y ~= -1 then   			
@@ -517,7 +491,7 @@ function SlimAppStore()
 end 
 
 function logoutAppStoreOnUI(timeout)
---	mSleep(2000);
+	--	mSleep(2000);
 	local time1 = os.time();
 
 	while true do
@@ -526,7 +500,6 @@ function logoutAppStoreOnUI(timeout)
 
 		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
-			toast("找到appleid登录用.png;" .. x .. ":" .. y,1);
 
 			touchDown(280,245);
 			mSleep(30);
@@ -537,8 +510,7 @@ function logoutAppStoreOnUI(timeout)
 
 		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 660,0);
 		if x ~= -1 and y ~= -1 then
-			toast("找到注销登录用.png;" .. x .. ":" .. y,1);
-
+			
 			touchDown(310,600);
 			mSleep(30);
 			touchUp(310,600);
@@ -565,32 +537,34 @@ end
 function  loginAppStoreOnUI(timeout)
 	local time1 = os.time();
 	while true do
+--		toast("loginAppStoreOnUI循环...",1);
 
 		findAndClickImage("存储容量几乎已满.png",100,470,520,530,190,50);
 
 		local x, y = findImageInRegionFuzzy("登录登录用.png",95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
-			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
 
 			touchDown(280,245);
 			mSleep(30);
 			touchUp(280,245);
 
-			mSleep(2000);
+			mSleep(4000);
 		end
 
-		local x, y = findImageInRegionFuzzy("appleid登录登录用.png",90,190, 220, 440, 280,0);
+		local x, y = findImageInRegionFuzzy("appleid登录界面的登录用.png",85,190, 220, 350, 270,0);
+		--		local x,y = findImage("appleid登录界面的登录用.png",190, 220, 350, 270);
+
 		if x ~= -1 and y ~= -1 then
-			toast("找到appleid登录登录用.png;" .. x .. ":" .. y,1);
 
 			local x, y = findImageInRegionFuzzy("框内的appleid登陆用.png",90,87, 309, 210, 350,0);
 			if x ~= -1 and y ~= -1 then
-				toast("框内的appleid登陆用.png;" .. x .. ":" .. y,1);
-
-				inputText(globlaAccount);
-				inputText("\n");
 
 				mSleep(300);
+				inputText(globlaAccount);
+				mSleep(300);
+				inputText("\n");
+
+				mSleep(1000);
 				inputText(globlaPassword);
 				mSleep(300);
 				inputText("\n");
@@ -605,9 +579,9 @@ function  loginAppStoreOnUI(timeout)
 
 				mSleep(300);
 
---				keyDown("DeleteOrBackspace");
---				mSleep(5000);
---				keyUp("DeleteOrBackspace");
+				keyDown("DeleteOrBackspace");
+				mSleep(5000);
+				keyUp("DeleteOrBackspace");
 
 				inputText(globlaPassword);
 				mSleep(300);
@@ -618,14 +592,12 @@ function  loginAppStoreOnUI(timeout)
 
 		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
-			toast("找到appleid登录用.png;" .. x .. ":" .. y,1);
 
 			return true;
 		end	
 
 		local x, y = findImageInRegionFuzzy("thisappleidisonly登录用.png", 95,70, 400, 420, 460,0);
 		if x ~= -1 and y ~= -1 then
-			toast("thisappleidisonly登录用.png;" .. x .. ":" .. y,1);
 
 			touchDown(320,720);
 			mSleep(30);
@@ -634,7 +606,7 @@ function  loginAppStoreOnUI(timeout)
 			return true;
 		end	
 
-		mSleep(1000);
+		mSleep(2000);
 
 		local time2 = os.time();
 
@@ -721,20 +693,6 @@ require("TBackups") --需要加载
 require "TSLib";
 
 
---SaveLoginOvertimeCount(10);
---toast(LoadLoginOvertimeCount(),1);
---SaveLog("reboot");
-
---CleanAccounts();
---CleanAppStore();
-
---closeApp("com.apple.Preferences");
---mSleep(1000);
---openURL("prefs:root=STORE");
-
---logoutAppStoreOnUI(10) ;
---loginAppStoreOnUI(10);
-
 --找字
 --[====[
 --内容已复制到剪贴板!
@@ -757,12 +715,13 @@ dialog("识别到的内容:"..ret)
 local timeOutCount = tonumber(LoadLoginOvertimeCount());
 toast("登陆失败次数：" .. timeOutCount,1);
 
-if timeOutCount > 3 then
+if timeOutCount >1 then
 	CleanAccounts();
 	mSleep(1000);
 	CleanAppStore();
+	mSleep(1000);	
+	SaveLoginOvertimeCount(0);
 	mSleep(1000);
-
 	SaveLog("reboot");
 	Reboot();
 
@@ -773,6 +732,7 @@ killVPN();
 
 SlimAppStore();	
 clearSafari();
+clearAllKeyChains();
 
 local thread = require('thread')
 local thread_id1 = thread.create(function()
@@ -794,10 +754,13 @@ end
 
 local thread_id2 = thread.create(function()
 		mSleep(10000);
-		local killmeCountLimit = 72;
+		local killmeCountLimit = 60;
 		local killmeCount = 0;
 
 		wufagoumaiIsShown = false;
+		local appleiddengluIsShow = false;
+		local searchTrendingIsShow = false;
+
 		while true do
 
 			toast("开始杀傻逼……" .. killmeCount,1)
@@ -814,6 +777,9 @@ local thread_id2 = thread.create(function()
 			imageDataList[3] = {imageName = "savepasswordforfree.png",x11 = 120,y11 = 440,x12 = 520,y12 = 490,x21 = 175,y21 = 690};
 			imageDataList[4] = {imageName = "theitunesstoreisunable杀傻逼用.png",x11 = 75,y11 = 435,x12 = 560,y12 = 485,x21 = 320,y21 = 700};
 			imageDataList[5] = {imageName = "没有被授权使用杀傻逼用.png",x11 = 195,y11 = 525,x12 = 440,y12 = 580,x21 = 320,y21 = 650};
+			imageDataList[6] = {imageName = "无法下载项目_杀傻逼.png",x11 = 200,y11 = 475,x12 = 430,y12 = 525,x21 = 190,y21 = 650};
+			imageDataList[7] = {imageName = "VPN连接_杀傻逼.png",x11 = 230,y11 = 230,x12 = 410,y12 = 280,x21 = 320,y21 = 460};
+			imageDataList[8] = {imageName = "VPN连接_杀傻逼.png",x11 = 230,y11 = 445,x12 = 410,y12 = 495,x21 = 315,y21 = 685};
 
 			findImageClickAreaList(imageDataList);
 
@@ -822,6 +788,38 @@ local thread_id2 = thread.create(function()
 				touchDown(180,440);
 				mSleep(30);
 				touchUp(180,440);
+			end	
+
+			local x, y = findImageInRegionFuzzy("appleid登录界面的登录用.png",85,190, 220, 355, 270,0);
+			if x ~= -1 and y ~= -1 then        
+				if appleiddengluIsShow then
+					touchDown(195,475);
+					mSleep(30);
+					touchUp(195,475);
+
+					appleiddengluIsShow = false;
+				else
+					appleiddengluIsShow =true;
+				end
+			end	
+
+			local x, y = findImageInRegionFuzzy("trending_杀傻逼.png",90,225,170,415,285,0);
+			if x ~= -1 and y ~= -1 then       
+				if searchTrendingIsShow then
+					touchDown(170,88);
+					mSleep(30);
+					touchUp(170,88);
+
+					mSleep(1000);             
+
+					AppstoreTopApp(appid);
+					inputText("\b\b\b\b\b\b\b\b\b\b" .. keyword .. "\n"); 
+					inputText("\n");
+
+					searchTrendingIsShow = false;
+				else
+					searchTrendingIsShow =true;
+				end
 			end	
 
 			local x, y = findImage("无法连接到AppStore.png", 90, 500, 550, 585);
@@ -876,19 +874,6 @@ local thread_id2 = thread.create(function()
 				end
 			end
 
-			--			if (wufagoumaiIsShown or killmeCount > 20) and killmeCount % 2 == 0 and not globalAllIsDone then
-			--				toast("点击下载的圈圈...X:".. globlaInstallX .. ";Y:" .. globlaInstallY ,1);
-
-			--				touchDown(globlaInstallX,globlaInstallY);
-			--				mSleep(30);
-			--				touchUp(globlaInstallX,globlaInstallY);
-
-			--				mSleep(1000);
-			--				touchDown(globlaInstallX,globlaInstallY);
-			--				mSleep(30);
-			--				touchUp(globlaInstallX,globlaInstallY);
-			--			end
-
 			killmeCount = killmeCount + 1;
 			mSleep(10000);
 		end
@@ -935,4 +920,6 @@ if resultTemp then
 	else 
 		lua_restart();			
 	end
+else
+	lua_restart();
 end
