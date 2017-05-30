@@ -363,7 +363,7 @@ function SerachFuck(keyword,appid)
 		findImageClickAreaList(imageDataList);
 	end
 
-	for i =0,2000,1 do
+	for i =0,200,1 do
 		if isFrontApp("com.apple.AppStore") ~= 1 then
 			runApp("com.apple.AppStore"); 
 		end
@@ -510,7 +510,7 @@ function logoutAppStoreOnUI(timeout)
 
 		local x, y = findImageInRegionFuzzy("注销登录用.png",95, 160, 570, 470, 660,0);
 		if x ~= -1 and y ~= -1 then
-			
+
 			touchDown(310,600);
 			mSleep(30);
 			touchUp(310,600);
@@ -522,6 +522,14 @@ function logoutAppStoreOnUI(timeout)
 		if x ~= -1 and y ~= -1 then
 			toast("找到登录登录用.png;" .. x .. ":" .. y,1);
 			return true;
+		end
+
+		local x, y = findImageInRegionFuzzy("appleid登录界面的登录用.png",85,190, 220, 350, 270,0);
+		if x ~= -1 and y ~= -1 then
+			local x, y = findImageInRegionFuzzy("框内的appleid登陆用.png",90,87, 309, 210, 350,0);
+			if x ~= -1 and y ~= -1 then
+				return true;
+			end
 		end
 
 		mSleep(1000);
@@ -657,6 +665,13 @@ function  Reboot()
 	os.execute("reboot");  
 end
 
+function WriteTimeTagASO()
+	local time1 = os.date("%Y-%m-%d %H:%M:%S");
+
+	local sz = require("sz");
+	writeFileString("/var/mobile/Media/TouchSprite/config/asolaunchtime.txt",tostring(time1):trim());	
+end
+
 
 --如果普通版tsp可以加上该段代码
 local tsld = loadTSLibrary("aso.tsl") --库加载
@@ -728,6 +743,8 @@ if timeOutCount >1 then
 	return;
 end
 
+WriteTimeTagASO();
+
 killVPN();
 
 SlimAppStore();	
@@ -772,14 +789,14 @@ local thread_id2 = thread.create(function()
 
 			local imageDataList = {};
 			imageDataList[1] = {imageName = "存储容量几乎已满.png",x11 = 100,y11 = 470,x12 = 520,y12 = 530,x21 = 190,y21 = 650};
-			imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};
-			--			imageDataList[3] = {imageName = "无法购买.png",x11 = 240,y11 = 440,x12 = 400,y12 = 530,x21 = 320,y21 = 670};
+			imageDataList[2] = {imageName = "无法连接到.png",x11 = 120,y11 = 490,x12 = 320,y12 = 550,x21 = 290,y21 = 625};		
 			imageDataList[3] = {imageName = "savepasswordforfree.png",x11 = 120,y11 = 440,x12 = 520,y12 = 490,x21 = 175,y21 = 690};
 			imageDataList[4] = {imageName = "theitunesstoreisunable杀傻逼用.png",x11 = 75,y11 = 435,x12 = 560,y12 = 485,x21 = 320,y21 = 700};
 			imageDataList[5] = {imageName = "没有被授权使用杀傻逼用.png",x11 = 195,y11 = 525,x12 = 440,y12 = 580,x21 = 320,y21 = 650};
 			imageDataList[6] = {imageName = "无法下载项目_杀傻逼.png",x11 = 200,y11 = 475,x12 = 430,y12 = 525,x21 = 190,y21 = 650};
-			imageDataList[7] = {imageName = "VPN连接_杀傻逼.png",x11 = 230,y11 = 230,x12 = 410,y12 = 280,x21 = 320,y21 = 460};
-			imageDataList[8] = {imageName = "VPN连接_杀傻逼.png",x11 = 230,y11 = 445,x12 = 410,y12 = 495,x21 = 315,y21 = 685};
+			imageDataList[7] = {imageName = "vpn连接1_杀傻逼.png",x11 = 230,y11 = 240,x12 = 410,y12 = 295,x21 = 320,y21 = 440};
+			imageDataList[8] = {imageName = "vpn连接2_杀傻逼.png",x11 = 230,y11 = 445,x12 = 410,y12 = 520,x21 = 315,y21 = 680};
+			imageDataList[9] = {imageName = "无法购买.png",x11 = 240,y11 = 440,x12 = 400,y12 = 530,x21 = 320,y21 = 670};			
 
 			findImageClickAreaList(imageDataList);
 
@@ -858,21 +875,21 @@ local thread_id2 = thread.create(function()
 
 
 
-			if findImageClickArea("无法购买.png",240,440,400,530,320,670) then
-				if globlaInstallX ~= 0 and globlaInstallY ~=0 then
+			--			if findImageClickArea("无法购买.png",240,440,400,530,320,670) then
+			--				if globlaInstallX ~= 0 and globlaInstallY ~=0 then
 
-					wufagoumaiIsShown = true;
-					mSleep(5000);
-					touchDown(globlaInstallX,globlaInstallY);
-					mSleep(30);
-					touchUp(globlaInstallX,globlaInstallY);
+			--					wufagoumaiIsShown = true;
+			--					mSleep(5000);
+			--					touchDown(globlaInstallX,globlaInstallY);
+			--					mSleep(30);
+			--					touchUp(globlaInstallX,globlaInstallY);
 
-					mSleep(1000);
-					touchDown(globlaInstallX,globlaInstallY);
-					mSleep(30);
-					touchUp(globlaInstallX,globlaInstallY);
-				end
-			end
+			--					mSleep(1000);
+			--					touchDown(globlaInstallX,globlaInstallY);
+			--					mSleep(30);
+			--					touchUp(globlaInstallX,globlaInstallY);
+			--				end
+			--			end
 
 			killmeCount = killmeCount + 1;
 			mSleep(10000);
