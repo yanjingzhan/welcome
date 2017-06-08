@@ -1,4 +1,12 @@
 [res]
+验证失败_ASO_5.png
+您必须同时输入_ASO_5.png
++open_ASO_5.png
+search_ASO_5.png
+登录itunesstore_ASO_5.png
+无法连接到appstore_ASO_5.png
+需要用AppleID登录_ASO_5.png
+无法下载项目_ASO_5.png
 vpn连接2_杀傻逼.png
 vpn连接1_杀傻逼.png
 trending_杀傻逼.png
@@ -52,3 +60,5 @@ main.lua
 fuckall.lua
 
 regicwithhotmail.lua
+
+morekeywords.lua
