@@ -2,15 +2,16 @@
 --com.apple.AppStore
 
 
-globlaAccount = "breonalanhywxuer@hotmail.com";
-globlaPassword = "UQpqLi22";
+globlaAccount = "wykjghpttvhefy@outlook.com";
+globlaPassword = "vmJEBb77";
 globlaGameAccount = 1;
-globlaKeyWords = "";
-globlaBunldeName="";
-globlaAppID="";
-globleTaskID="";
+globlaKeyWords = "单机麻将";
+globlaBunldeName="com.matieling.SexyBabyGuessing";
+globlaAppID="1217476010";
+globleTaskID="-1";
 
 globlaIsInDownloading = false;
+globalUseVPN = true;
 
 globlaInstallX=0;
 globlaInstallY=0;
@@ -33,6 +34,12 @@ function string.split(str, delimiter)
 		table.insert(result, match)
 	end
 	return result
+end
+
+function Click(x,y)
+	touchDown(1, x, y)
+	mSleep(math.random(20,80))
+	touchUp(1, x, y)
 end
 
 --返回 true/false 账号 密码 游戏个数 关键字 bunldeNames, appIDs
@@ -259,10 +266,12 @@ function loginAppStore(account,password,retryCount,checkCount)
 					--			toast('没有找到' .. "登录 iTunes Store.png");       
 				end	
 
-				if findImageClickArea("此AppleID只能在.png",80,430,560,480,300,700) then
+				local x, y = findImageInRegionFuzzy("此appleid_ASO_5.png",85,105,430,305,480,0);
+				if x ~= -1 and y ~= -1 then
+					Click(300,700);
 					hasLoginned = true;
 					break;
-				end;
+				end	
 
 				if findImageClickArea("thisappliidisonly.png",80,410,560,460,300,700) then
 					hasLoginned = true;
@@ -305,7 +314,7 @@ function SerachFuck(keyword,appid)
 
 		mSleep(2000);
 
---		if not hasClickedSearchPNG then
+		--		if not hasClickedSearchPNG then
 		local x, y = findImageInRegionFuzzy("search.png",90,400,1040,477,1120,0);
 		if x ~= -1 and y ~= -1 then   
 			touchDown(x ,y);
@@ -315,7 +324,7 @@ function SerachFuck(keyword,appid)
 			hasClickedSearchPNG = true;
 
 		end
---		end
+		--		end
 
 		if not hasClickedSearchtopPNG then 
 			local x, y = findImageInRegionFuzzy("searchtop.png",95,15,60,600,110,0);
@@ -358,6 +367,13 @@ function SerachFuck(keyword,appid)
 		end
 
 		local x, y = findImage("gamelogo1.png", 188, 173, 521, 295);
+		if x ~= -1 and y ~= -1 then   
+			toast("找到了" .. keyword,1);
+			globalGameIsShown = true;
+			break;   
+		end
+
+		local x, y = findImage("gamelogo2.png", 188, 173, 521, 295);
 		if x ~= -1 and y ~= -1 then   
 			toast("找到了" .. keyword,1);
 			globalGameIsShown = true;
@@ -429,7 +445,24 @@ function SerachFuck(keyword,appid)
 
 			globlaInstallX = x +60;
 			globlaInstallY = y + 20;
+		end	
 
+		local x, y = findImageInRegionFuzzy("获取_ASO_5.png",85, 504,170,620, 290,0);
+		if x ~= -1 and y ~= -1 then   			
+
+			touchDown(x,y);
+			mSleep(30);
+			touchUp(x,y);
+
+			toast("点击啦加号" .. keyword,1);
+			mSleep(1000);
+
+			touchDown(x,y);
+			mSleep(30);
+			touchUp(x,y);
+
+			globlaInstallX = x +60;
+			globlaInstallY = y + 20;
 		end	
 
 		local x, y = findImageInRegionFuzzy("hasdownloaded.png",95,540, 170, 620, 340,0);
@@ -441,8 +474,6 @@ function SerachFuck(keyword,appid)
 			touchDown(x,y);
 			mSleep(30);
 			touchUp(x,y);
-
-			--			return false;
 		end
 
 		local x, y = findImageInRegionFuzzy("install.png",95,470,170, 620, 340,0);
@@ -454,10 +485,21 @@ function SerachFuck(keyword,appid)
 			touchDown(x,y);
 			mSleep(30);
 			touchUp(x,y);
-
-			--			return false;
 		end
 
+
+		local x, y = findImageInRegionFuzzy("安装_ASO_5",85,470,170, 620, 340,0);
+		if x ~= -1 and y ~= -1 then   
+			toast("安装！！！ ！！！" .. keyword.. x .. ":" ..y,1)
+
+			mSleep(1500);
+
+			touchDown(x,y);
+			mSleep(30);
+			touchUp(x,y);
+		end
+
+		findAndClickImage("搜索_ASO_5.png",5,50,180,110);
 		findAndClickImage("左上角search.png",5,50,180,110);
 		findAndClickImage("使用现有的appleid.png",150,510,500,570);
 
@@ -593,7 +635,7 @@ end
 function  loginAppStoreOnUI(timeout)
 	local time1 = os.time();
 	while true do
---		toast("loginAppStoreOnUI循环...",1);
+		--		toast("loginAppStoreOnUI循环...",1);
 
 		findAndClickImage("存储容量几乎已满.png",100,470,520,530,190,50);
 
@@ -648,6 +690,13 @@ function  loginAppStoreOnUI(timeout)
 		local x, y = findImageInRegionFuzzy("appleid登录用.png", 95,10, 205, 185, 280,0);
 		if x ~= -1 and y ~= -1 then
 
+			return true;
+		end	
+
+
+		local x, y = findImageInRegionFuzzy("此appleid_ASO_5.png",85,105,430,305,480,0);
+		if x ~= -1 and y ~= -1 then
+			Click(300,700);
 			return true;
 		end	
 
@@ -865,11 +914,8 @@ end
 
 toast("clean accounts and appstore",1)
 KillProcess("Preferences");
-mSleep(1000);
 CleanAccounts();
-mSleep(1000);
-CleanAppStore();
-mSleep(1000);	
+CleanAppStore();	
 
 CleanFSCachedData();
 CleanStoreServices();
@@ -910,10 +956,10 @@ local thread_id2 = thread.create(function()
 			imageDataList[11] = {imageName = "trequirepasswordfor.png",x11 = 80,y11 = 370,x12 = 565,y12 = 420,x21 = 300,y21 = 750};
 			imageDataList[12] = {imageName = "您必须同时输入_ASO_5.png",x11 = 85,y11 = 470,x12 = 335,y12 = 520,x21 = 320,y21 = 660};
 			imageDataList[13] = {imageName = "验证失败_ASO_5.png",x11 = 240,y11 = 490,x12 = 395,y12 = 540,x21 = 320,y21 = 630};
-
+			imageDataList[14] = {imageName = "此appleid_ASO_5.png",x11 = 105,y11 = 430,x12 = 305,y12 = 480,x21 = 300,y21 = 700};
 
 			if not globlaIsInDownloading then
-				imageDataList[14] = {imageName = "登录itunesstore_ASO_5.png",x11 = 175,y11 = 190,x12 = 470,y12 = 270,x21 = 180,y21 = 475};			
+				imageDataList[15] = {imageName = "登录itunesstore_ASO_5.png",x11 = 175,y11 = 190,x12 = 470,y12 = 270,x21 = 180,y21 = 475};			
 			end
 
 			findImageClickAreaList(imageDataList);
@@ -1034,11 +1080,17 @@ local thread_id2 = thread.create(function()
 --resultTemp,globlaAccount,globlaPassword,globlaGameAccount,globlaKeyWords,globlaBunldeName,globlaAppID = getAccountInfo("http://ios.pettostudio.net/AccountInfo.aspx?action=GetIOSFullInfoByStateStr&state=success&configfilename=shuagame2.txt");
 resultTemp,globlaAccount,globlaPassword,globlaGameAccount,globlaKeyWords,globlaBunldeName,globlaAppID,globleTaskID = getTaskInfo("http://ios.pettostudio.net/AccountInfo.aspx?action=GetASOTaskForPhone&state=success&phonegroup=1");
 
+--test
+--resultTemp = true;
+--globalUseVPN = false;
+--test
+
 if resultTemp then
 	ipaUninstall(globlaBunldeName);	
 
-
-	connectVPN(6);
+	if globalUseVPN then
+		connectVPN(6);
+	end
 
 	closeApp("com.apple.Preferences");
 	mSleep(1000);
